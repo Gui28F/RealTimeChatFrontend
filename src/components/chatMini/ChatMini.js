@@ -1,8 +1,53 @@
 import {MDBTypography} from "mdb-react-ui-kit";
 import React from "react";
+import SockJS from 'sockjs-client';
+import Stomp from 'stompjs';
 
 export default function ChatMini(props){
     const { chat } = props;
+
+    var stompClient = null;
+
+    function onMessageReceived(payload) {
+        var message = JSON.parse(payload.body);
+
+       console.log("received")
+    }
+
+    function onConnected() {
+        // Subscribe to the Public chat
+        stompClient.subscribe(`/chat/${chat.id}`, onMessageReceived);
+        console.log("Subscribed")
+    }
+    function onError(error) {
+      console.log(error)
+    }
+
+    /*function send(event) {
+        var messageContent = messageInput.value.trim();
+
+        if(messageContent && stompClient) {
+            var chatMessage = {
+                sender: username,
+                content: messageInput.value,
+                type: 'CHAT'
+            };
+
+            stompClient.send("/app/chat.send", {}, JSON.stringify(chatMessage));
+            messageInput.value = '';
+        }
+        event.preventDefault();
+    }*/
+    function connect(event) {
+        const socket = new SockJS('http://localhost:8080/websocket');
+        stompClient = Stomp.over(socket);
+        const headers = {
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+        };
+
+        stompClient.connect(headers, onConnected, onError);
+    }
+    connect()
     return (   <MDBTypography listUnStyled className="mb-0">
         <li className="p-2 border-bottom">
             <a

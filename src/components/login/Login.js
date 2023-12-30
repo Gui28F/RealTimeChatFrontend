@@ -19,6 +19,24 @@ function Login() {
 
     const [justifyActive, setJustifyActive] = useState('tab1');
     let navigate = useNavigate();
+
+    useEffect(() => {
+        const handleKeyPress = (event) => {
+            if (event.key === 'Enter') {
+                if (justifyActive === 'tab1') {
+                    handleLogin();
+                } else if (justifyActive === 'tab2') {
+                    handleRegister();
+                }
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyPress);
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [justifyActive]);
     const handleJustifyClick = (value) => {
         if (value === justifyActive) {
             return;
@@ -62,6 +80,7 @@ function Login() {
             return response.json();
         }).then((res)=>{
             localStorage.setItem('token', res.token);
+            localStorage.setItem('userId', userId);
             navigate("/chats")
         })
             .catch((error) => {

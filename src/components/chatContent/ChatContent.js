@@ -1,5 +1,6 @@
-import {MDBCol, MDBIcon} from "mdb-react-ui-kit";
-import React, {useLayoutEffect, useRef} from "react";
+import {MDBCol, MDBIcon, MDBRow} from "mdb-react-ui-kit";
+import React, {useEffect, useLayoutEffect, useRef} from "react";
+import SimpleDateTime  from 'react-simple-timestamp-to-date';
 
 function stringToColor(str) {
     // Simple hash function
@@ -10,81 +11,91 @@ function stringToColor(str) {
     return `hsl(${hue}, 70%, 50%)`;
 }
 export default function ChatContent(props){
-    const {chat} = props
-    console.log(chat)
+    const {stompClient, chat} = props
     const chatContentRef = useRef(null);
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         // Scroll to the bottom of the chat content when component is mounted
         if (chatContentRef.current) {
             chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight;
         }
-    }, []);
-    const backgroundColor = stringToColor("teste");
+    }, [chat.messages]);
+
+    function send(event) {
+        var messageContent = document.getElementById("exampleFormControlInput2");
+        if(messageContent && stompClient) {
+            var chatMessage = {
+                senderId: localStorage.getItem('userId'),
+                msg: messageContent.value,
+            };
+            stompClient.send(`/app/chat.send/${chat.id}`, {}, JSON.stringify(chatMessage));
+            messageContent.value = '';
+        }
+        event.preventDefault();
+    }
+
+
+    const iconStyle = {
+        position: "relative",
+        width: "45px",
+        height: "45px",
+        borderRadius: "100%",
+        top: "0.5rem",
+
+        textAlign: "center",
+        alignContent: "center",
+        color: "white",
+        padding: "3px",
+        fontSize: "14px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+    }
     return (
         <>
-        <MDBCol
+        <MDBCol id={"content"}
             md="6"
             lg="7"
             xl="8"
             style={{ maxHeight: "75.3vh", overflow: "scroll", borderColor:"blue !important"}}
             ref={chatContentRef}
         >{
-            chat.messages.map((msg)=>{
-                if(true) {
-                    return (<div className="d-flex flex-row justify-content-start">
-                        <img
-                            src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava6-bg.webp"
-                            alt="avatar 1"
-                            style={{width: "45px", height: "100%"}}
-                        />
+            chat && chat.messages.map((msg, index)=> {
+                const backgroundColor = stringToColor(msg.user.id);
+                if (msg.user.id !== localStorage.getItem('userId')) {
+                    return (<div key={index} className="d-flex flex-row justify-content-start">
+                        <div
+                            style={{ ...iconStyle, backgroundColor }}
+                        >
+                            {msg.user.id[0].toUpperCase()}
+                        </div>
                         <div>
                             <p
                                 className="small p-2 ms-3 mb-1 rounded-3"
                                 style={{backgroundColor: "#f5f6f7"}}
                             >
-                                Lorem ipsum dolor sit amet, consectetur adipiscing
-                                elit, sed do eiusmod tempor incididunt ut labore et
-                                dolore magna aliqua.
+                                {msg.content}
                             </p>
                             <p className="small ms-3 mb-3 rounded-3 text-muted float-end">
-                                12:00 PM | Aug 13
+                                <SimpleDateTime dateFormat="DMY" dateSeparator="/"  timeSeparator=":">{msg.timestamp}</SimpleDateTime>
                             </p>
                         </div>
                     </div>)
-                }else {
-                    return (<div className="d-flex flex-row justify-content-end">
+                } else {
+                    return (<div key={index} className="d-flex flex-row justify-content-end">
                         <div>
                             <p className="small p-2 me-3 mb-1 text-white rounded-3 bg-primary">
-                                Ut enim ad minim veniam, quis nostrud exercitation
-                                ullamco laboris nisi ut aliquip ex ea commodo
-                                consequat.
+                                {msg.content}
                             </p>
                             <p className="small me-3 mb-3 rounded-3 text-muted">
-                                12:00 PM | Aug 13
+                                <SimpleDateTime dateFormat="DMY" dateSeparator="/"  timeSeparator=":">{msg.timestamp}</SimpleDateTime>
                             </p>
                         </div>
 
                         <div
-                            style={{
-                                position: "relative",
-                                width: "45px",
-                                height: "45px",
-                                borderRadius: "100%",
-                                top: "0.5rem",
-
-                                textAlign: "center",
-                                alignContent: "center",
-                                backgroundColor,
-                                color: "white",
-                                padding: "3px",
-                                fontSize: "14px",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                            }}
+                            style={{ ...iconStyle, backgroundColor }}
                         >
-                            {"T"}
+                            {msg.user.id[0].toUpperCase()}
                         </div>
                     </div>);
                 }
@@ -92,9 +103,12 @@ export default function ChatContent(props){
         }
 
     </MDBCol>
-            <div   className="text-muted d-flex justify-content-end align-items-center pe-3 pt-3 mt-2"
-                   style={{ width: "100%",
-                   paddingLeft:"51.6%"}}>
+            <MDBCol
+                md="6"
+                lg="7"
+                xl="8"
+                className="text-muted d-flex justify-content-end align-items-center ms-auto text-end"
+               >
                 <img
                     src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava6-bg.webp"
                     alt="avatar 3"
@@ -105,6 +119,11 @@ export default function ChatContent(props){
                     className="form-control form-control-lg"
                     id="exampleFormControlInput2"
                     placeholder="Type message"
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            send(e);
+                        }
+                    }}
                 />
                 <a className="ms-1 text-muted" href="#!">
                     <MDBIcon fas icon="paperclip" />
@@ -112,9 +131,9 @@ export default function ChatContent(props){
                 <a className="ms-3 text-muted" href="#!">
                     <MDBIcon fas icon="smile" />
                 </a>
-                <a className="ms-3" href="#!">
+                <a className="ms-3" href="#!" onClick={send}>
                     <MDBIcon fas icon="paper-plane" />
                 </a>
-            </div>
+            </MDBCol>
         </>);
 }

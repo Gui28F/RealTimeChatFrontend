@@ -25,7 +25,7 @@ export default function ChatMini(props){
                         <span className="badge bg-success badge-dot"></span>
                     </div>
                     <div className="pt-1">
-                        <p className="fw-bold mb-0">{chat.name}</p>
+                        <p className="fw-bold mb-0">{chat.name} ( ID: {chat.id})</p>
                         <p className="small text-muted">
                             {chat.messages.at(chat.messages.length - 1) ? chat.messages.at(chat.messages.length - 1).content : null}
                         </p>

@@ -3,6 +3,8 @@ const BACKEND_URL = "http://localhost:8080";
 const REGISTER_URL = BACKEND_URL+"/users/register";
 const LOGIN_URL = BACKEND_URL+"/users/login";
 const CHATS_URL = BACKEND_URL+"/user/chats";
+const ADD_CHAT_URL = BACKEND_URL+"/user/chat?chatName=";
+const JOIN_CHAT_URL = BACKEND_URL+"/user/joinchat?chatID=";
 // Function to make a GET request
 async function getData(url) {
     const token = localStorage.getItem('token');
@@ -23,15 +25,23 @@ async function getData(url) {
 }
 
 // Function to make a POST request
-async function postData(url, data) {
+async function postData(url, data, token) {
     try {
+        const headers = {
+            'Content-Type': 'application/json',
+        };
+
+        // Add Authorization header only if token is provided
+        if (token) {
+            headers['Authorization'] = "Bearer " + localStorage.getItem("token");
+        }
+
         const response = await fetch(url, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: headers,
             body: JSON.stringify(data),
         });
+
         return response;
     } catch (error) {
         console.error('Error posting data:', error);
@@ -42,4 +52,4 @@ async function postData(url, data) {
 // You can add more functions for other HTTP methods if needed
 
 // Export the functions to use them in other files
-export { getData, postData, BACKEND_URL, REGISTER_URL, LOGIN_URL, CHATS_URL };
+export { getData, postData, BACKEND_URL, REGISTER_URL, LOGIN_URL, CHATS_URL, ADD_CHAT_URL,JOIN_CHAT_URL};

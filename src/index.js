@@ -7,6 +7,11 @@ import 'mdb-react-ui-kit/dist/css/mdb.min.css';
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import {BrowserRouter} from "react-router-dom";
 
+
+
+/*
+Interface design baased on https://mdbootstrap.com/docs/standard/extended/chat/
+ */
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
       <BrowserRouter basename="/">
@@ -14,7 +19,4 @@ root.render(
       </BrowserRouter>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();

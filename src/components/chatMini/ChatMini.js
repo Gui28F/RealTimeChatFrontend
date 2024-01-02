@@ -1,7 +1,5 @@
 import {MDBTypography} from "mdb-react-ui-kit";
 import React from "react";
-import SockJS from 'sockjs-client';
-import Stomp from 'stompjs';
 
 export default function ChatMini(props){
     const { chat, onSelect } = props;

@@ -23,7 +23,7 @@ export default function ChatContent(props){
 
     function send(event) {
         var messageContent = document.getElementById("exampleFormControlInput2");
-        if(messageContent && stompClient) {
+        if(messageContent && messageContent.value !== '' && stompClient) {
             var chatMessage = {
                 senderId: localStorage.getItem('userId'),
                 msg: messageContent.value,

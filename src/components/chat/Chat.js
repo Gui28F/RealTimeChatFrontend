@@ -50,7 +50,7 @@ export default function Chat() {
 
         async function setupWebSocket() {
             var data = await fetchData(); // Wait for data to be fetched
-            const socket = new SockJS(`http://localhost:8080/websocket?token=${localStorage.getItem('token')}`);
+            const socket = new SockJS(`https://localhost:8080/websocket?token=${localStorage.getItem('token')}`);
             const client = Stomp.over(socket);
             const headers =  {
                             "Authorization":  "Bearer " + localStorage.getItem("token"),

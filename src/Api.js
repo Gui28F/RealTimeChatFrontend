@@ -1,5 +1,5 @@
 // api.js
-const BACKEND_URL = "http://localhost:8080";
+const BACKEND_URL = "https://localhost:8080";
 const REGISTER_URL = BACKEND_URL+"/users/register";
 const LOGIN_URL = BACKEND_URL+"/users/login";
 const CHATS_URL = BACKEND_URL+"/user/chats";
@@ -15,6 +15,7 @@ async function getData(url) {
                 authorization: `Bearer ${token}`,
             },
             mode: 'cors',
+            credentials: 'include',
         })
             .then(res => res.json())
         return response;
@@ -40,6 +41,7 @@ async function postData(url, data, token) {
             method: 'POST',
             headers: headers,
             body: JSON.stringify(data),
+            credentials: 'include',
         });
 
         return response;
